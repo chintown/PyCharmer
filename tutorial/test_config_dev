@@ -1,0 +1,8 @@
+#!/usr/bin/python
+# this is a config for tutorial
+{
+    'some directory': 'foo/',
+    'some file': '[some directory]/fob.txt',
+
+    'is_dry_run': True,
+}
