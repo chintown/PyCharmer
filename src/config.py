@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import codecs
 from pprint import pprint
 from datetime import datetime
+
 
 class ConfigObject(object):
     '''
@@ -20,13 +22,16 @@ class ConfigObject(object):
             record = [{'value': v, 'source': self.id, 'stamp': datetime.now()}]
             config[k] = record
         self.config = config
+
     def get_config(self):
         return self.config
 
     def keys(self):
         return self.config.keys()
+
     def get(self, key):
         return self.config.get(key)
+
     def __getitem__(self, key):
         '''
         get last overrided item, which is placed at the end of list
@@ -36,6 +41,7 @@ class ConfigObject(object):
         else:
             value = self.config[key][-1]['value']
             return value
+
     def __len__(self):
         return len(self.config)
 
@@ -47,10 +53,11 @@ class ConfigObject(object):
         self_record = self.config.get(key)
         last_record = prior_record.pop()
         last_record['stamp'] = datetime.now()
-        mergerd_record = prior_record+self_record
-        mergerd_record.sort(key=lambda l:l['stamp'] , reverse=False)
+        mergerd_record = prior_record + self_record
+        mergerd_record.sort(key=lambda l: l['stamp'], reverse=False)
         mergerd_record.append(last_record)
         self.config[key] = mergerd_record
+
     def update(self, prior_config_object):
         '''
         similar to the update_record, but update the whole input in batch mode
@@ -69,6 +76,7 @@ class ConfigObject(object):
                 self_config[key] = prior_record
             elif prior_record is None:
                 pass
+
     def output_history(self):
         '''
         output the config to dictionary (and keep the inheritance records)
@@ -76,7 +84,7 @@ class ConfigObject(object):
         output_config = {}
         for k, records in self.config.items():
             snap_shots = []
-            for record in records :
+            for record in records:
                 snap_shots.append("%s(%s)" % (record['value'], record['source']))
             snap_shots.reverse()
             if len(snap_shots) > 1:
@@ -94,6 +102,7 @@ class ConfigObject(object):
         for k, records in self.config.items():
             output_config[k] = records[-1]['value']
         return output_config
+
     def pprint_dict(self):
         '''
         pretty print for output_history
@@ -102,19 +111,33 @@ class ConfigObject(object):
         max_key_length = max(map(lambda item: len(item), history_configs.keys()))
         history_configs = history_configs.items()
         history_configs.sort(key=lambda item: item[0])
-        ptn = "%-"+str(max_key_length)+"s := %s"
+        ptn = "%-" + str(max_key_length) + "s := %s"
         for k, v in history_configs:
             print ptn % (k, v)
 
 
 def get_full_path(file_path_relative_to_project_root):
-    try:
-        script_filepath = os.path.realpath(__file__)
-        script_path = os.path.dirname(script_filepath)
-        script_root = script_path + '/../'
-        return script_root + file_path_relative_to_project_root
-    except:
-        return '/homes/chintown/src/newsdd/conf/'+file_path_relative_to_project_root
+    script_filepath = os.path.realpath(__file__)
+    script_path = os.path.dirname(script_filepath)
+    script_root = script_path + '/../'
+    full_path = script_root + file_path_relative_to_project_root
+    return full_path
+
+
+def get_full_path_from_importer(file_path_relative_to_importer):
+    importer = sys._getframe(2).f_globals.get('__file__')
+    importer_filepath = os.path.realpath(importer)
+    importer_path = os.path.dirname(importer_filepath)
+    full_file_path = os.path.join(importer_path, file_path_relative_to_importer)
+    return full_file_path
+
+    # script_filepath = os.path.realpath(__file__)
+    # script_path = os.path.dirname(script_filepath)
+    # script_root = script_path + '/../'
+    # full_path = script_root + file_path_relative_to_importer
+    # return full_path
+
+
 def load(fn):
     """
     this method loads the given config filename as a dictionary
@@ -130,24 +153,40 @@ def load(fn):
         print e
         exit(1)
     return config
-def load_from_script_root(fn, id, script_root=None):
+
+
+def load_from_importer(fn, id):
+    """
+    this method will load the config filename as a dictionary
+    from the file import config.py no matter where you execute the script
+    and bind the given id to the loaded config so that we can easily distinguish
+    the configs from different files
+    """
+    # importer = sys._getframe(1).f_globals.get('__file__')
+    # importer_filepath = os.path.realpath(importer)
+    # importer_path = os.path.dirname(importer_filepath)
+    full_file_path = get_full_path_from_importer(fn)
+    result = load(full_file_path)
+    co = ConfigObject(result, id)
+    return co
+
+
+def load_from_script_root(fn, id):
     """
     this method will load the config filename as a dictionary
     from the script root, no matter where you execute the script
     and bind the given id to the loaded config so that we can easily distinguish
     the configs from different files
     """
-    if script_root is not None:
-        full_file_path = os.path.realpath(script_root+'/'+fn)
-    else:
-        full_file_path = get_full_path(fn)
+    full_file_path = get_full_path(fn)
     result = load(full_file_path)
     co = ConfigObject(result, id)
     return co
 
+
 def soft_load_from_script_root(fn, id):
     """
-    similar to load_from_script_root, but nbly load only if the file is existed
+    similar to load_from_script_root, but only load only if the file is existed
     """
     full_file_path = get_full_path(fn)
     result = {}
@@ -155,7 +194,6 @@ def soft_load_from_script_root(fn, id):
         result = load(full_file_path)
     co = ConfigObject(result, id)
     return co
-
 
 
 def convert_option(option_obj):
@@ -172,12 +210,14 @@ def convert_option(option_obj):
     co = ConfigObject(option, 'command_line')
     return co
 
+
 def pickup_from_dict(tar_dict, keys):
     '''
     get a subset of the given dictionary by the given IDs
     '''
-    pickuped = dict((k,v) for k,v in tar_dict.items() if k in keys)
+    pickuped = dict((k, v) for k, v in tar_dict.items() if k in keys)
     return pickuped
+
 
 def is_first_time_execution():
     '''
@@ -197,9 +237,9 @@ def is_first_time_execution():
         return True
 
 if __name__ == '__main__':
-    a = {'1':1, '2':2}
-    b = {'2':'x', '3':3}
-    c = {'2':'y', '3':3}
+    a = {'1': 1, '2': 2}
+    b = {'2': 'x', '3': 3}
+    c = {'2': 'y', '3': 3}
     ao = ConfigObject(a, 'a')
     bo = ConfigObject(b, 'b')
     co = ConfigObject(c, 'c')
