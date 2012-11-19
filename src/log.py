@@ -8,6 +8,7 @@ from time import gmtime
 from time import strftime
 from pprint import pprint
 
+
 class Logger(object):
     '''
     this logger provide functionalities like "tee" command
@@ -44,8 +45,9 @@ class Logger(object):
         '99': {'type': 'EXIT'},
     }
 
-    MAX_LINE_WIDTH = 75 # of log message
+    MAX_LINE_WIDTH = 75  # of log message
     TITLE_OFFSET = 3
+
     def __init__(self, fn, mode='a'):
         """
         [PARA]
@@ -57,15 +59,17 @@ class Logger(object):
         self.fn = self._set_ext(fn)
         self.mode = mode
         self.f = None
+        self.is_mute = 0
         self.last_is_stdout = self.is_stdout = 1
         self.last_is_fileout = self.is_fileout = 1
         self.tag = ''
-        self.cache = '' # for thread
+        self.cache = ''  # for thread
         self.tracelevel = 100
+
     def _get_file_handler(self):
         if self.f is None:
             try:
-                self.f = codecs.open(self.fn,self.mode,'utf8')
+                self.f = codecs.open(self.fn, self.mode, 'utf8')
             except IOError, e:
                 print "[WARN] Logger can not access the target file:"
                 print e
@@ -77,10 +81,12 @@ class Logger(object):
                     print e
 
         return self.f
+
     def _set_ext(self, fn):
         if not fn.endswith('.log'):
             fn += '.log'
         return fn
+
     def _trace_back(self):
         '''
         return the trace back message in reorganized structure w/
@@ -95,15 +101,16 @@ class Logger(object):
             frame_instance, filepath, tar_lineno, func, list_line, idx_of_line = list(record)
             file = filepath.split('/')[-1]
             res = "%s %s\n" % (file, func)
-            i = 0; indicator = '==> '
+            i = 0
+            indicator = '==> '
             for line in list_line:
                 if i == idx_of_line:
                     indent = indicator
                 else:
-                    indent = ' '*len(indicator)
+                    indent = ' ' * len(indicator)
                 offset = i - idx_of_line
                 lineno = tar_lineno + offset
-                res+= "%s%s %s" % (indent, lineno, line)
+                res += "%s%s %s" % (indent, lineno, line)
                 i += 1
             #print res
         return res
@@ -112,27 +119,36 @@ class Logger(object):
         stamp = strftime("%m-%d %H:%M:%S", gmtime())
         return stamp
 
-
     def set_file(self, fn):
         self.fn = self._set_ext(fn)
+    def set_mute(self, is_mute):
+        self.is_mute = is_mute
     def set_stdout(self, is_stdout):
         self.is_stdout = is_stdout
+
     def force_stdout_set(self, is_stdout):
         self.last_is_stdout = self.is_stdout
         self.is_stdout = is_stdout
+
     def restore_stdout_set(self):
         self.is_stdout = self.last_is_stdout
+
     def force_fileout_set(self, is_fileout):
         self.last_is_fileout = self.is_fileout
         self.is_fileout = is_fileout
+
     def restore_fileout_set(self):
         self.is_fileout = self.last_is_fileout
+
     def clear_cache(self):
         self.cache = ''
+
     def get_cache(self):
         return self.cache
+
     def dump_cache(self):
         sys.stdout.write(self.cache)
+
     def handover_cache(self, cache):
         sys.stdout.write(cache)
         self.f.write(cache)
@@ -144,14 +160,18 @@ class Logger(object):
         [HELP]  for MM-DD hh:mm:ss [INFO] log message
         """
         self.tag = "[%s]\t" % (tag)
+
     def p(self, *argv):
         pprint(argv)
+
     def log(self, trace_level, *list0):
         """ log input data in a blocked line (w/ new line code) """
         self._log(True, trace_level, *list0)
+
     def log_float(self, trace_level, *list0):
         """ log input data in a floating line (w/o new line code) """
         self._log(False, trace_level, *list0)
+
     def _log(self, is_new_line, trace_level, *list0):
         """
         [USAGE] l.log(1, 'a', ['x', 'y'])
@@ -182,11 +202,11 @@ class Logger(object):
             content = unicode(list0)
 
         if trace_level == Logger.INFO_HEAD:
-            content  = content.upper()
+            content = content.upper()
 
         # prepare prepare
         prefix = ''
-        title_prefix_len = Logger.MAX_LINE_WIDTH-len(content)+Logger.TITLE_OFFSET
+        title_prefix_len = Logger.MAX_LINE_WIDTH - len(content) + Logger.TITLE_OFFSET
         if trace_level == Logger.INFO_HEAD:
             prefix = '['+'='*title_prefix_len
         elif trace_level == Logger.INFO_HEAD_S:
@@ -243,7 +263,7 @@ class Logger(object):
                 self.f.write(record)
 
             # print log
-            if  self.is_stdout:
+            if not self.is_mute and self.is_stdout:
                 sys.stdout.write(record)
 
             # cache log
