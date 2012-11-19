@@ -109,17 +109,19 @@ class Delegatee(object):
 
             self.stamp_output = stamp_output
             status = proc.returncode
+        raw_output = raw_output.rstrip("\n\r")
 
-        self.cmd = cmd
         # exception handler
         if Delegatee.NORMAL != status:
             if len(cmd) > (self.logger.MAX_LINE_WIDTH * 2):
                 self.cmd = "[Rerun the long command]  "+cmd
+            self.raw_output = raw_output
             raise CommandError(self.stamp_output)
 
-        raw_output = raw_output.rstrip("\n\r")
+        self.cmd = cmd
         self.raw_output = raw_output
-        return raw_output
+
+        return self.raw_output
     def _show_command(self, cmd):
         msg = cmd
         self._log(Logger.INFO, msg)
