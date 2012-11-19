@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 from datetime import timedelta
 
+
 class DateGenerator(object):
     def __init__(self, date, formate, is_not_string=False):
         """
@@ -36,9 +37,11 @@ class DateGenerator(object):
                 """ % (formate, date)
                 sys.exit(1)
         self.formate = formate
+
     def _convert_time_to_date_time(self, time):
         epoch = mktime(time)
         return fromtimestamp(epoch)
+
     def get_offset_date(self, offset_days):
         """
         get date by a offset volume
@@ -63,16 +66,22 @@ class DateGenerator(object):
 
     def __lt__(self, other):
         return self.date < other.date
+
     def __le__(self, other):
         return self.date <= other.date
+
     def __eq__(self, other):
         return self.date == other.date
+
     def __ne__(self, other):
         return self.date != other.date
+
     def __gt__(self, other):
         return self.date > other.date
+
     def __ge__(self, other):
         return self.date >= other.date
+
     def __sub__(self, other):
         return self.date - other.date
 
@@ -82,5 +91,5 @@ if __name__ == '__main__':
     last_week = today.get_offset_date(7)
     print last_week
     one_day = last_week.get_offset_date(1)
-    print one_day;
+    print one_day
     print '%s' % (today - one_day).days
