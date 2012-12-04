@@ -168,6 +168,7 @@ class Logger(object):
         """ log input data in a blocked line (w/ new line code) """
         self._log(True, trace_level, *list0)
 
+    ''' deprecated '''
     def log_float(self, trace_level, *list0):
         """ log input data in a floating line (w/o new line code) """
         self._log(False, trace_level, *list0)
@@ -197,9 +198,9 @@ class Logger(object):
             content = "process interrupted at %s! : (\
                      \nlog: %s " % (list0[0], self.fn)
         elif len(list0) == 1:
-            content = unicode(list0[0])
+            content = unicode(list0[0], 'utf-8')
         else:
-            content = unicode(list0)
+            content = unicode(list0, 'utf-8')
 
         if trace_level == Logger.INFO_HEAD:
             content = content.upper()
