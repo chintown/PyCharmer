@@ -272,7 +272,7 @@ class Logger(object):
 
             # print log
             if not self.is_mute and self.is_stdout:
-                sys.stdout.write(record)
+                sys.stdout.write(record.encode('utf-8'))
 
             # cache log
             self.cache += record

@@ -268,7 +268,10 @@ class Job(object):
                 if complete_stack == ('[%s]' % (search)):
                     complete_stack = replace
                 else:
-                    complete_stack = complete_stack.replace('[%s]' % (search), str(replace))
+                    try:
+                        complete_stack = complete_stack.replace('[%s]' % (search), str(replace))
+                    except UnicodeEncodeError:
+                        complete_stack = complete_stack.replace('[%s]' % (search), str(replace.encode('utf8')))
         return complete_stack
 
     def _complete_config(self, config=None, is_soft=True):
