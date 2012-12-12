@@ -78,8 +78,13 @@ class Delegatee(object):
             proc = Popen(args=cmd, shell=True, stdout=PIPE, stderr=STDOUT)
 
             # record the live log, and output it to file for tail monitoring
-            stamp_output = '('+self.logger.get_stamp()+')'
-            f = open(self._get_tmp_logging_file(cmd_snippet), 'w+')
+            stamp_output = '(' + self.logger.get_stamp() + ')'
+            fn = self._get_tmp_logging_file(cmd_snippet)
+            if not os.path.exists(fn):
+                f = open(fn, 'w+')
+                os.chmod(fn, 0666)
+            else:
+                f = open(fn, 'w+')
             while True:
                 out = proc.stdout.read(1)
                 if out == '' and proc.poll() != None:
@@ -88,7 +93,7 @@ class Delegatee(object):
                     raw_output += out
                     stamp_output += out
                     if "\n" == out:
-                        out += '('+self.logger.get_stamp()+') '
+                        out += '(' + self.logger.get_stamp() + ') '
                     f.write(out)
                     f.flush()
                 #print str(self)
@@ -114,11 +119,12 @@ class Delegatee(object):
         # exception handler
         if Delegatee.NORMAL != status:
             if len(cmd) > (self.logger.MAX_LINE_WIDTH * 2):
-                self.cmd = "[Rerun the long command]  "+cmd
+                cmd = "[Rerun the long command]  "+cmd
+            self.cmd = cmd
             self.raw_output = raw_output
             raise CommandError(self.stamp_output)
 
-        self.cmd = cmd
+        self.cmd = cmd;
         self.raw_output = raw_output
 
         return self.raw_output

@@ -69,7 +69,11 @@ class Logger(object):
     def _get_file_handler(self):
         if self.f is None:
             try:
-                self.f = codecs.open(self.fn, self.mode, 'utf8')
+                if not os.path.exists(self.fn):
+                    self.f = codecs.open(self.fn, self.mode, 'utf8')
+                    os.chmod(self.fn, 0666)
+                else:
+                    self.f = codecs.open(self.fn, self.mode, 'utf8')
             except IOError, e:
                 print "[WARN] Logger can not access the target file:"
                 print e
@@ -79,7 +83,6 @@ class Logger(object):
                 except e:
                     print "[ERROR] Logger can not mkdir: %s." % (direcotry)
                     print e
-
         return self.f
 
     def _set_ext(self, fn):
@@ -198,9 +201,13 @@ class Logger(object):
             content = "process interrupted at %s! : (\
                      \nlog: %s " % (list0[0], self.fn)
         elif len(list0) == 1:
-            content = unicode(list0[0], 'utf-8')
+            content = list0[0]
         else:
-            content = unicode(list0, 'utf-8')
+            content = list0
+        try:
+            content = unicode(content, 'utf-8')
+        except TypeError:
+            content = content
 
         if trace_level == Logger.INFO_HEAD:
             content = content.upper()
