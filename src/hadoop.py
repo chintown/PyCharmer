@@ -220,8 +220,13 @@ class Shell(Delegatee):
         else:
             if not os.path.exists(path):
                 dir_name = os.path.dirname(path)
-                cmd = 'mkdir -p %s/' % dir_name
+                cmd = 'mkdir -p "%s/"' % dir_name
                 ret = os.system(cmd)
+                # print ret
+                # proc = Popen(['mkdir -p "' + dir_name + '/"'], shell=True, stdout=PIPE, stderr=PIPE)
+                # print proc
+                # print proc.stdout.read()
+                # print proc.stderr.read()
                 if 0 != ret:
                     result = Delegatee.FAIL
                 else:
