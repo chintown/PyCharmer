@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import codecs
 import random
 from commands import getstatusoutput
 from subprocess import Popen
@@ -240,7 +241,7 @@ class Shell(Delegatee):
         path = os.path.dirname(path_w_file)
         if not os.path.exists(path):
             res = Shell.mkdir_p(path_w_file)
-        return open(path_w_file, mode)
+        return codecs.open(path_w_file, mode, encoding='utf-8')
 
     @classmethod
     def safe_write_all(self, path, content, is_dry_run=False):
