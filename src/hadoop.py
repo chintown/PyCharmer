@@ -76,7 +76,12 @@ class Delegatee(object):
             #cmd = 'echo '+cmd
             #cmd = ["date; sleep 1;"] * 7
             #cmd = ''.join(cmd)
-            proc = Popen(args=cmd, shell=True, stdout=PIPE, stderr=STDOUT)
+            try:
+                proc = Popen(args=cmd, shell=True, stdout=PIPE, stderr=STDOUT)
+            except TypeError,e :
+                #  raise TypeError('args must contain only strings')
+                cmd = cmd.encode('utf8')
+                proc = Popen(args=cmd, shell=True, stdout=PIPE, stderr=STDOUT)
 
             # record the live log, and output it to file for tail monitoring
             stamp_output = '(' + self.logger.get_stamp() + ')'
