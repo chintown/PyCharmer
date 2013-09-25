@@ -162,7 +162,8 @@ class Logger(object):
         [USAGE] l.set_tag('INFO')
         [HELP]  for MM-DD hh:mm:ss [INFO] log message
         """
-        self.tag = "[%s]\t" % (tag)
+        # self.tag = "[%s]\t" % (tag)
+        self.tag = "%s" % (tag)
 
     def p(self, *argv):
         pprint(argv)
@@ -396,9 +397,9 @@ class Logger(object):
             self.f.close()
 
 if __name__ == '__main__':
-    l = Logger('/Users/chintown/tmp/testlog')
+    l = Logger('/Users/chintown/tmp/testlog', 'w')
     l.set_stdout(1)
     l.set_tag('XX')
-    l.log('aaaaaaaaaaaaa')
-    l.log(1,2,3 )
+    l.log(Logger.ERRO, 'aaaaaaaaaaaaa')
+    # l.log(1,2,3 )
     l.close()
