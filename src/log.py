@@ -205,6 +205,8 @@ class Logger(object):
             content = list0[0]
         else:
             content = list0
+
+        content = str(content)
         try:
             content = unicode(content, 'utf-8')
         except TypeError:
