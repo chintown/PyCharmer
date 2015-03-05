@@ -3,7 +3,7 @@ information while you write it rather than execute it. We separate a process int
 three major components: logic unit (Job class), flow (plan tree or BlockJob),
 and data (config mechanism).
 
-Job class let you define self-documented work flow. also let you modularize your
+Job class let you define self-documented work flow. Also let you modularize your
 execution unit for better reusability. The things you should focus here is action
 and the corresponding decision on the result. All the data should be ready-to-use
 before the job starts (e.g. no file path composing in the job)
@@ -25,7 +25,7 @@ rather than the whole filepath but the directory as a config. The mechanism will
 replace that in the runtime. So you will get a well prepared path, which looks like
     "some/real_directory_name/in/the/long/file/path".)
 
-Another important issue is tracking what actually did.
+Another important issue is tracking what actually the flow did.
 Logging is a delegated functionality for every Job. It also provides hierarchical
 header/footer for organize the plain-text log.
 
@@ -67,7 +67,7 @@ Job Plan
 
 Build a complete flow
 
-    First, create a JobBlock as a process wrapper. Then list your job plans and
+    First, create a JobBlock as a top-level wrapper. Then list your job plans and
         assign them to the wrapper. All you need here are job IDs and their states.
         Say, add_plan(from_job_id='job_a', state=Job.DONE, to_job_id='job_b')
         (you could think about the detail of each job in the latter steps)
