@@ -8,8 +8,8 @@ import random
 # add path of project library into python path
 current_filepath =  os.path.realpath(__file__)
 current_dirpath  = os.path.dirname(current_filepath) + "/"
-if current_dirpath +'../lib' not in sys.path:
-    sys.path.append(current_dirpath +'../lib')
+if current_dirpath +'../src' not in sys.path:
+    sys.path.append(current_dirpath +'../src')
 
 from job import Job
 from job import JobNode
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     j.add_sub_job(j_sub)
     # --
     j_sub = JobNode(id='foobar', desc=''' foobar ''')
-    j_sub.set_callback(foo_job)
+    j_sub.set_callback(foobar_job)
     j.add_sub_job(j_sub)
     # --
     wrapper.add_sub_job(j)
@@ -106,17 +106,24 @@ if __name__ == '__main__':
     wrapper.add_sub_job(j)
 
     '''
+    everything looks good in dry run mode.
+    turn it off to test in real mode
+    '''
+    wrapper.set_dry_run(False)
+
+    '''
     after several round of testing, i found most jobs work fine.
-    but there's something stange in the second job. so I want to enable the
+    but there's something strange in the second job. so I want to enable the
     real mode only for that job. then, we could set dry_run for indivisual job.
     however, the dry_run config is a global setting; once you set for any job,
-    it will affect on the whole proces. to specify the scope on the certain job,
+    it will affect on the whole process. to specify the scope on the certain job,
     you need to set the config locally by set_as_local parameter.
 
     wait. there is another trick in the config: the sub jobs of a JobBlock will
     inherit the config from its parent. so you could limit the scope of real mode
     step by step to testing the ill job.
     '''
+    wrapper.set_dry_run(True)
     j = wrapper.find_job('block')
     j.set_dry_run(False, set_as_local=True)
 

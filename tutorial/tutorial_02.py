@@ -7,8 +7,8 @@ import sys
 # add path of project library into python path
 current_filepath =  os.path.realpath(__file__)
 current_dirpath  = os.path.dirname(current_filepath) + "/"
-if current_dirpath +'../lib' not in sys.path:
-    sys.path.append(current_dirpath +'../lib')
+if current_dirpath +'../src' not in sys.path:
+    sys.path.append(current_dirpath +'../src')
 
 from job import Job
 from job import JobNode
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     wrapper.add_plan('block1', Job.DONE, Job.LAST_JOB)
 
     '''
-    first, as usual top-down design strategy, we define JobBlock, which is like
+    first, with the top-down design strategy, we define JobBlock, which is like
     wrapper with its own plan.
     '''
     # ==
@@ -63,25 +63,25 @@ if __name__ == '__main__':
     j_sub.set_callback(normal_job)
     j.add_sub_job(j_sub)
     # ==
-    
+
     '''
     BTW, here's a small tips.
     while designing a large flow, you may want to well-organize your code by
-    putting the related things together. 
+    putting the related things together.
     but sometimes, you can't assign the value you want right after the job is
     initiated because the value should be calculated/generated later.
     we provide the flexibility to delay the manipulation.
     '''
-    
+
     # some other code
     # ...
     # ...
-    
+
     '''
     say, we generate something here
     '''
     some_value = ' blah blah blah'
-    
+
     '''
     and we want to append the value to the description of job1.
     how to get the object of job1?
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     '''
     j =  wrapper.find_job('job1')
     j.desc += some_value
-    
+
 
     '''
     check the result to re-exame the flow of the process

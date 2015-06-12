@@ -7,8 +7,8 @@ import sys
 # add path of project library into python path
 current_filepath =  os.path.realpath(__file__)
 current_dirpath  = os.path.dirname(current_filepath) + "/"
-if current_dirpath +'../lib' not in sys.path:
-    sys.path.append(current_dirpath +'../lib')
+if current_dirpath +'../src' not in sys.path:
+    sys.path.append(current_dirpath +'../src')
 
 from job import Job
 from job import JobNode
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     they are part of "syntax" of the plan; you should assign Job.INIT_JOB and
     Job.LAST_JOB for any of your process.
     in this step, we just give some job name (id) and compose their sequence
-    without thing any detail implementation of them. that helps you be focus on
+    without thinking any detail implementation of them. that helps you be focus on
     the planning.
     '''
     wrapper = JobBlock('entry job', '''

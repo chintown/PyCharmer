@@ -10,7 +10,7 @@ from datetime import datetime
 # add path of project library into python path
 current_filepath =  os.path.realpath(__file__)
 current_dirpath  = os.path.dirname(current_filepath) + "/"
-if current_dirpath +'../lib' not in sys.path:
+if current_dirpath +'../src' not in sys.path:
     sys.path.append(current_dirpath +'../lib')
 
 from job import Job
@@ -84,5 +84,5 @@ if __name__ == '__main__':
 
     '''
     now, we introduced all the building blocks. try to contruct your job flow!
-    the rest tutorial will introduce some advanced features (configs and delegations)
+    the rest tutorial will introduce some advanced features (configurations and delegations)
     '''

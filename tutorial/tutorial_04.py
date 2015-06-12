@@ -9,8 +9,8 @@ from copy import deepcopy
 # add path of project library into python path
 current_filepath =  os.path.realpath(__file__)
 current_dirpath  = os.path.dirname(current_filepath) + "/"
-if current_dirpath +'../lib' not in sys.path:
-    sys.path.append(current_dirpath +'../lib')
+if current_dirpath +'../src' not in sys.path:
+    sys.path.append(current_dirpath +'../src')
 
 from job import Job
 from job import JobNode

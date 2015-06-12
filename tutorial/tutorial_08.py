@@ -8,8 +8,8 @@ from optparse import OptionParser
 # add path of project library into python path
 current_filepath =  os.path.realpath(__file__)
 current_dirpath  = os.path.dirname(current_filepath) + "/"
-if current_dirpath +'../lib' not in sys.path:
-    sys.path.append(current_dirpath +'../lib')
+if current_dirpath +'../src' not in sys.path:
+    sys.path.append(current_dirpath +'../src')
 
 from job import Job
 from job import JobNode
@@ -69,8 +69,8 @@ if __name__ == '__main__':
     normal loading does not.
     this mechanism give the flexibility to load some environment-dependent configs.
     '''
-    configs     = config.load_from_script_root('./doc/test_config', id='base')
-    configs_dev = config.load_from_script_root('./doc/test_config_dev', id='dev')
+    configs     = config.load_from_script_root('./tutorial/test_config', id='base')
+    configs_dev = config.load_from_script_root('./tutorial/test_config_dev', id='dev')
 
     '''
     now, we want the configs to be overrided by configs_dev
