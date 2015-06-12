@@ -118,5 +118,8 @@ if __name__ == '__main__':
     them you will see the conversation
     '''
     # ==
+    # wrapper.set_interactive(True)
+    output_graph_file = '/tmp/'+process_id+'.dot'
+    wrapper.set_visualization(True, output_graph_file)
     job_id, state = wrapper.execute()
     #raw_input()

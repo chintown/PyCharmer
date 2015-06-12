@@ -5,6 +5,10 @@ GRAPH_LIB_NOT_FOUND = """
             networkx http://networkx.lanl.gov/
             graphviz http://www.graphviz.org/
                      http://www.graphviz.org/content/attrs
+
+            pip install networkx
+            # pip install pygraphviz
+            # https://github.com/pygraphviz/pygraphviz/issues/40
         otherwise, disable the graph method, set_output_graph_file(), of JobBlock
 """
 
