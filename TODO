@@ -1,0 +1,5 @@
+TODO terminate plan checking if reach LAST_JOB
+TODO refactor is_valid for Block and Para
+TODO naming alignment: neighbor v.s. children
+
+NOTE add sub job before using reset_lock_n_exit
