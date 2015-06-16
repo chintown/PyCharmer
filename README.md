@@ -2,3 +2,90 @@ PyCharmer
 =========
 
 As OOZIE for Haddop, PyCharmer is a python workflow framework
+
+Overview
+-------
+
+The main idea of this tool is to clarify the work flow and its input/output
+information while you write it rather than execute it. We separate a process into
+three major components: logic unit (Job class), flow (plan tree or BlockJob),
+and data (config mechanism).
+
+**Job** class let you define self-documented work flow. Also let you modularize your
+execution unit for better reusability. The things you should focus here is action
+and the corresponding decision on the result. All the data should be ready-to-use
+before the job starts (e.g. no file path composing in the job)
+
+**JobBlock** is a composite of `JobNode` and `JobBlock`. so you could compose many units
+into tree-structure as your plan.
+
+**Config** mechanism is a powerful (also complicated) system to prepare input/output
+data you need in different scope (e.g. whole process or single Job). It
+also provides syntax for variablize the config value which allowed you set variable
+in the config value. This is especially useful when you design job in "template".
+(e.g. you find a similar pattern for few jobs. The only differences between them
+is part of the input value, say a directory of a long filepath. so you new a Job
+instance and set the common flow also the long filepath. But, you leave the
+directory part as a variable, the syntax will looks like `some/[directory]/in/the/long/file/path`.
+Now, you can copy the template (yes, deeply) into several pieces; and assign
+rather than the whole filepath but the directory as a config. The mechanism will
+replace that in the runtime. So you will get a well prepared path, which looks like `some/real_directory_name/in/the/long/file/path`.
+
+Another important issue is tracking what actually the flow did.
+
+**Logging** is a delegated functionality for every Job. It also provides hierarchical
+header/footer for organize the plain-text log.
+
+The cost of planning could be examined. Human mistakes including typos,
+lost-implementation and business logic update w/o testing
+
+
+JobNode
+-------
+
+You can encapsulate some concrete commands as a `JobNode`. Say, checking whether a file existed or execute a shell command. To create a `JobNode`, you have to give an id and a description; and assign your method, which contains the commands you need, as a callback method. Optionally, you could give a configuration dictionary for each `JobNode`. So the main difference between `JobNode` and callback method is *context-awareness*.
+
+JobBlock
+--------
+
+Some job could be separated as several sub-jobs. For keeping the integrity of the job, we provide `JobBlock` to encapsulate several small JobNodes. From the high level point of view, you could treat the `JobBlock` as single JobNode. Yes, they implement the same interface, Job. For convenient, we referred `JobNode`/`JobBlock` as to Job in the following explanation
+
+Job Plan
+--------
+
+We treat the decision steps between `JobNode`/`JobBlock` as a job plan, or you can image it as a execution path. Each plan comprises of three parts - starting job, execution result of the starting job (we call it as state) and the destination job. You should list all the plan explicitly, including what's the destination if the state is an error, warning state.
+
+Build a complete flow
+---------------------
+
+First, create a `JobBlock` as a top-level wrapper. Then list your job plans and assign them to the wrapper. All you need here are job IDs and their states. Say, `add_plan(from_job_id='job_a', state=Job.DONE, to_job_id='job_b')` (you could think about the detail of each job in the latter steps) you may notice that there is a *state*, including `DONE`, `SKIP`, `ERROR` and etc., linked between two jobs. It helps us to limit the process with in finite states,and indicates the flow of you job plan.
+
+Then, you have to setup each Job instance. A job instance could be created by `JobNode`, `JobBlock` or even `ParaJobBlock`; it depends on your need. Then you have to assign a *callback* method, which represent the real execution unit, into the job; and the job instance will delegate the execution to the callback method when it starts. you could plug and play with the callback, even reuse it in different jobs. "what if I need the same execution logic but with different settings?" Yes, we provide configuration that could be set for each job. Access them in your callback by `self.input['your_input_key']`. All the sub job will inherit the configuration from its parent.
+
+Let's take a look at callback methods. Here's an example:
+```python
+    def foo_callback(self):
+        some_conig = self.input['some_input']
+        is_something_happend = None
+        try:
+            // do something and set is_something_happend ...
+            if is_something_happend:
+                return Job.SKIP
+            else:
+                return Job.DONE
+        except:
+            return Job.ERRO
+```
+Notice that `self` is one who contains configurations. Then, you should take of every proper/except condition in the callback, and return the corresponding *state*.
+
+Finally, execute your wrapper, the most outer Job.
+
+Logger
+------
+
+The Job class maintains a Logger object as class variable. This allows you to add a log without initiating any object but it may not be convenient for logging in job objects (to access a class variable, you need to type more). Thus, in any job objects, we made delegation so that you could use log method as self member
+
+Input management
+----------------
+
+For a large processing, inputs will be set as configurable and inheritable. For each Job, we need to explicitly list the input variable name, which is referred as to *key*; and its *value* is optional. If the variable is new in the whole process, we must assign its value. However, if we want to use it with the value assigned before, we could omit the value parameter.

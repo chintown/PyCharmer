@@ -121,11 +121,3 @@ Input management
     is referred as to "key"; and its "value" is optional. If the variable is new in
     the whole process, we must assign its value. However, if we want to use it with
     the value assigned before, we could omit the value parameter.
-
-REMIND: add sub job before using reset_lock_n_exit
-
-TODO pig README
-TODO check whether the code is only suitable for this case, or could be use in the future
-TODO terminate plan checking if reach LAST_JOB
-TODO refactor is_valid for Block and Para
-TODO naming alignment: neighbor v.s. children
