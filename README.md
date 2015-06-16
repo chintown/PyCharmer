@@ -68,7 +68,7 @@ Let's take a look at callback methods. Here's an example:
         some_conig = self.input['some_input']
         is_something_happend = None
         try:
-            // do something and set is_something_happend ...
+            # do something and set is_something_happend ...
             if is_something_happend:
                 return Job.SKIP
             else:
