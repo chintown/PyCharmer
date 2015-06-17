@@ -10,7 +10,7 @@ The main idea of this tool is to clarify the workflow and its input/output infor
 
 **Plan flow** could be treat as a Directed Acyclical Graph (DAG). Most time, you can design it just in tree. However, you can also consider graph with certain constraints/conditions to create a plan with fault-tolerance (e.g. retrying to allocate a Hadoop job).
 
-**Parameters** is the soul, or *context*, of the flow body. It represents in input and output of jobs (one output may be the input of following job). It can be got from files, codes or even runtime evaluations. Parameters should be defined with scopes (e.g. shared between group of jobs or shared in whole process).
+**Parameters** are the soul, or *context*, of the flow body. They represent in input and output of jobs (one output may be the input of following job). They can be got from files, codes or even runtime evaluations. Parameters should be defined with scopes (e.g. shared between group of jobs or shared in whole process).
 
 **Logging** helps you to understand what happens based on the flow with give *context* (e.g. input). it's a built-in functionality for every logic unit. It provides hierarchical format for displaying the output of plan.
 
